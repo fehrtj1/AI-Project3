@@ -1,7 +1,7 @@
 
 
 class Game:
-    def __init__(self, deck, clues):
+    def __init__(self, deck, clues, players):
 
         self.deck = deck
         self.discarded_cards = []
@@ -11,6 +11,7 @@ class Game:
         self.fuse_tokens = 3
         self.game_lost = False
         self.clues = []
+        self.players = players
 
     def turn(self, player, action_number):
 
@@ -57,8 +58,12 @@ class Card:
 
 
 class Clue:
-    def __init__(self, colors, values, relevant_player):
-        pass
+    def __init__(self, color, value, positions, affected_player):
+        self.value = value
+        self.color = color
+        self.positions = positions
+        self.affected_player = affected_player
+
 
 
 class Player:
