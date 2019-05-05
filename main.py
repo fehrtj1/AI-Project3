@@ -1,7 +1,7 @@
-
+import random
 
 class Game:
-    def __init__(self, deck, clues):
+    def __init__(self, deck):
 
         self.deck = deck
         self.discarded_cards = []
@@ -19,11 +19,9 @@ class Game:
 
         elif action_number is 1:  # Discard a card
             self.time_tokens += 1
-            self.discard(self, player, )
+            self.discard(self, player, player.get_optimal_card_to_discard())
 
         elif action_number is 2:  # Play a card
-
-
             self.play(self, player, player.get_optimal_card())
 
         else:
@@ -78,9 +76,16 @@ class Player:
         if len(deck) is 0:
             print("One turn remaining, draw pile empty")
 
-    def get_optimal_card(self):
+    def initial_draw(self, deck):
+        for _ in range(5):
+            self.draw(deck)
+
+
+    def get_optimal_card_to_play(self):
         pass
         # do something to judge what card should be played.
+    def get_optimal_card_to_discard(self):
+        pass
 
 def create_deck():
     deck_length = 50
@@ -104,21 +109,22 @@ def create_deck():
     if len(deck) is deck_length:
         print("*Deck created successfully*")
 
+    random.shuffle(deck)
     return deck
 
 
 
 ######### Game Loop
 
-deck = create_deck()
-for card in deck:
-    print(str(card.color) + " " + str(card.value))
-#hanabi = Game
+deck = create_deck() # already shuffled
+#hanabi = Game(deck)
+#player1 =
 
 
 
 
-#while not
+#while not hanabi.game_lost:
+
 
 
 
