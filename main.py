@@ -7,6 +7,7 @@ class Game:
 
         self.time_tokens = 8
         self.fuse_tokens = 3
+        self.game_lost = False
 
     def turn(self, player, action_number):
         if action_number is 0: # Give one piece of information
@@ -21,7 +22,16 @@ class Game:
     def play(self, player, card):
 
         if card in player.hand:
-            self.active_cards[card.color] =
+            if self.active_cards[card.color][-1] is (card.value + 1)
+                self.active_cards[card.color].extend(card.value)
+            else:
+                self.fuse_tokens -= 1
+                cur_fuses = 3 - self.fuse_tokens
+                print("Play invalid, igniting fuse number " + str(3 - self.fuse_tokens))
+                if cur_fuses is 0:
+                    self.game_lost = True
+
+
 
 
 
