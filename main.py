@@ -1,5 +1,6 @@
 import random
 
+
 class Game:
     def __init__(self, deck):
 
@@ -15,7 +16,8 @@ class Game:
     def turn(self, player, action_number):
 
         if action_number is 0:  # Give one piece of information
-            self.time_tokens -= 1
+            if self.time_tokens > 0:
+                self.time_tokens -= 1
 
         elif action_number is 1:  # Discard a card
             self.time_tokens += 1
@@ -61,8 +63,10 @@ class Clue:
 
 class Player:
 
-    def __init__(self, hand):
-        self.hand = hand
+    def __init__(self, deck):
+        self.deck = deck
+        self.hand = []
+        self.initial_draw(deck)
 
     def discard(self, card):
         if card in self.hand:
@@ -80,12 +84,13 @@ class Player:
         for _ in range(5):
             self.draw(deck)
 
-
     def get_optimal_card_to_play(self):
         pass
         # do something to judge what card should be played.
+
     def get_optimal_card_to_discard(self):
         pass
+
 
 def create_deck():
     deck_length = 50
@@ -95,13 +100,13 @@ def create_deck():
     for color in colors:
         for i in range(10):
 
-            if i is 0 or i is 1 or i is 2:
+            if i is 0 or 1 or 2:
                 deck.append(Card(color, 1))
-            elif i is 3 or i is 4:
+            elif i is 3 or 4:
                 deck.append(Card(color, 2))
-            elif i is 5 or i is 6:
+            elif i is 5 or 6:
                 deck.append(Card(color, 3))
-            elif i is 7 or i is 8:
+            elif i is 7 or 8:
                 deck.append(Card(color, 4))
             else:
                 deck.append(Card(color, 5))
@@ -114,16 +119,19 @@ def create_deck():
 
 
 
-######### Game Loop
+# Game Loop
 
-deck = create_deck() # already shuffled
-#hanabi = Game(deck)
-#player1 =
+_deck = create_deck() # already shuffled
+player1 = Player()
+player2 = Player()
+players = [player1, player2]
+hanabi = Game(_deck)
 
 
 
 
-#while not hanabi.game_lost:
+
+while not hanabi.game_lost:
 
 
 
