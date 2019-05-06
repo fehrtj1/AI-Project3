@@ -14,7 +14,7 @@ class Game:
         self.players = players
         self.current_player = players[0].number
 
-    ### Possible moves during a turn
+    # Possible moves during a turn
 
     def give_hint(self, card_indices, value, color): # Pass None for one since only one piece may be given
         if self.time_tokens > 0:
@@ -23,14 +23,14 @@ class Game:
             if value is None and color is not None or value is not None and color is None:
                 for i in card_indices:
                     if value is None:
-                        self.players[self.other_player_number()].cards_known[i].color = color
+                        self.clues.append(Clue(color, None, self.other_player_number()))
                     if color is None:
-                        self.players[self.other_player_number()].cards_known[i].value = value
-
+                        self.clues.append(Clue(None, value, self.other_player_number()))
+            else:
+                print("Too much or not enough hint information")
             self.change_player()
         else:
             print("No tokens available to give hint")
-
 
     def discard(self, player, card_index):
         print("Discarding...")
@@ -55,7 +55,7 @@ class Game:
             print("card not in player's hand")
         self.change_player()
 
-    ###
+    #
 
     def change_player(self):
         self.current_player = ((self.current_player + 1) % len(self.players))
@@ -137,9 +137,12 @@ def create_deck():
     return deck
 
 
+
+
 # Game Loop
 _deck = create_deck() # already shuffled
 hanabi = Game([Player(0), Player(1)])
 
 while not hanabi.game_lost:
     pass
+
