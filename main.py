@@ -17,7 +17,6 @@ class Game:
 
         if action_number is 0:  # Give one piece of information
             self.time_tokens -= 1
-
         elif action_number is 1:  # Discard a card
             self.time_tokens += 1
             self.discard(player, None)
@@ -94,7 +93,6 @@ class Player:
 def create_deck():
     deck_length = 50
     deck = []
-    colors = ['green', 'blue', 'yellow', 'red', 'white']
 
     for color in colors:
         for i in range(10):
@@ -118,6 +116,7 @@ def create_deck():
 
 # Game Loop
 
+colors = ['green', 'blue', 'yellow', 'red', 'white']
 _deck = create_deck()
 for _card in _deck:
     print(str(_card.color) + " " + str(_card.value))
