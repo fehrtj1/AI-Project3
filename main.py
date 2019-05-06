@@ -2,7 +2,7 @@ import random
 
 
 class Game:
-    def __init__(self, deck):
+    def __init__(self, deck, clues, players):
 
         self.deck = deck
         self.discarded_cards = []
@@ -11,20 +11,20 @@ class Game:
         self.time_tokens = 8
         self.fuse_tokens = 3
         self.game_lost = False
-        self.clues = []
+        self.clues = clues
+        self.players = players
 
     def turn(self, player, action_number):
 
         if action_number is 0:  # Give one piece of information
             if self.time_tokens > 0:
                 self.time_tokens -= 1
-
         elif action_number is 1:  # Discard a card
             self.time_tokens += 1
-            self.discard(self, player, player.get_optimal_card_to_discard())
+            self.discard(player, None)
 
         elif action_number is 2:  # Play a card
-            self.play(self, player, player.get_optimal_card())
+            self.play(player, player.get_optimal_card())
 
         else:
             print("Not a valid action")
@@ -42,7 +42,7 @@ class Game:
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
-                print("Play invalid, igniting fuse number " + cur_fuses + "...")
+                print("Play invalid, igniting fuse number " + str(cur_fuses) + "...")
                 if cur_fuses is 0:
                     self.game_lost = True
                     print("All fuses have been lit, game is over")
@@ -57,26 +57,33 @@ class Card:
 
 
 class Clue:
-    def __init__(self, colors, values, relevant_player):
-        pass
+    def __init__(self, color, value, affected_player):
+        self.value = value
+        self.color = color
+        self.affected_player = affected_player
+        for i in range(len(affected_player.cards_known)):
+            if affected_player.hand[i].color == self.color:
+                affected_player.cards_known[i].color = self.color
+            if affected_player.hand[i].value == self.value:
+                affected_player.cards_known[i].value = self.value
 
 
 class Player:
+    def __init__(self, hand):
+        self.hand = hand
+        self.cards_known = [Card(None, None)] * len(hand)
 
-    def __init__(self, deck):
-        self.deck = deck
-        self.hand = []
-        self.initial_draw(deck)
-
-    def discard(self, card):
-        if card in self.hand:
-            self.hand.remove(card)
+    def discard(self, card_index):
+        if 0 < card_index < len(self.hand):
+            del self.hand[card_index]
+            del self.cards_known[card_index]
             return
         print("ERR: Card not in hand")
 
     def draw(self, deck):
         new_card = deck.pop()
         self.hand.append(new_card)
+        self.cards_known.append(Card(None, None))
         if len(deck) is 0:
             print("One turn remaining, draw pile empty")
 
@@ -88,15 +95,11 @@ class Player:
         pass
         # do something to judge what card should be played.
 
-    def get_optimal_card_to_discard(self):
-        pass
-
 
 def create_deck():
     deck_length = 50
     deck = []
     colors = ['green', 'blue', 'yellow', 'red', 'white']
-
     for color in colors:
         for i in range(10):
 
@@ -118,6 +121,7 @@ def create_deck():
     return deck
 
 
+# Game Loop
 
 # Game Loop
 
@@ -132,7 +136,3 @@ hanabi = Game(_deck)
 
 
 while not hanabi.game_lost:
-
-
-
-
