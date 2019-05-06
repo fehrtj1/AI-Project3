@@ -16,16 +16,15 @@ class Game:
 
     # Possible moves during a turn
 
-    def give_hint(self, card_indices, value, color): # Pass None for one since only one piece may be given
+    def give_hint(self, value, color):  # Pass None for one since only one piece may be given
         if self.time_tokens > 0:
             self.time_tokens -= 1
 
             if value is None and color is not None or value is not None and color is None:
-                for i in card_indices:
-                    if value is None:
-                        self.clues.append(Clue(color, None, self.other_player_number()))
-                    if color is None:
-                        self.clues.append(Clue(None, value, self.other_player_number()))
+                if value is None:
+                    self.clues.append(Clue(color, None, self.players[self.other_player_number()]))
+                if color is None:
+                    self.clues.append(Clue(None, value, self.players[self.other_player_number()]))
             else:
                 print("Too much or not enough hint information")
             self.change_player()
@@ -106,6 +105,17 @@ class Player:
         if len(deck) is 0:
             print("One turn remaining, draw pile empty")
 
+    def print_hand(self):
+        i = 0
+        for card in self.cards_known:
+            print("Card at index {0}: ".format(i) + card.color if card.color is not None else "Unknown color - {0}".
+                  format(str(card.value)) if card.value is not None else "Unknown value")
+            i += 1
+
+    def print_full_hand(self):
+        for card in self.hand:
+            print(card.color + " - " + str(card.value) + "\n")
+
     def initial_draw(self, deck):
         for _ in range(5):
             self.draw(deck)
@@ -140,11 +150,46 @@ def create_deck():
     return deck
 
 
-
-
 # Game Loop
 _deck = create_deck()  # already shuffled
-hanabi = Game([], [Player(0), Player(1)])
+h = Game([], [Player(0), Player(1)])
 
-while not hanabi.game_lost:
-    pass
+while not h.game_lost:
+    initial_input = input("Player " + str(h.current_player) + "choose an action: (p)lay, (d)iscard, give (h)int")
+    h.players[h.current_player].draw(_deck)
+    if initial_input == "P" or initial_input == "p":
+        h.players[h.current_player].print_hand()
+        card_num = int(input("Pick a card index to play\n"))
+        while len(h.players[h.current_player].hand) < card_num or card_num < 0:
+            print("bad input")
+            card_num = input("Pick a card index to play\n")
+        h.play(h.players[h.current_player], card_num)
+    elif initial_input == "D" or initial_input == "d":
+        h.players[h.current_player].print_hand()
+        card_num = int(input("Pick a card index to discard\n"))
+        while len(h.players[h.current_player].hand) < card_num or card_num < 0:
+            print("bad input")
+            card_num = input("Pick a card index to discard\n")
+        h.discard(h.players[h.current_player], card_num)
+    elif initial_input == "H" or initial_input == "h":
+        h.players[h.other_player_number()].print_full_hand()
+        type_input = input("Give a hint on (V)alue or (C)olor")
+        while type_input != "C" or type_input != "c" or type_input != "V" or type_input != "v":
+            print("invalid hint")
+            type_input = input("Give a hint on (V)alue or (C)olor")
+        if type_input == "C" or type_input == "c":
+            color_input = input("green, yellow, red, blue, or white").lower()
+            while color_input != "green" or color_input != "yellow" or color_input != "red" or color_input != "blue" or color_input != "white":
+                print("invalid color")
+                color_input = input("green, yellow, red, blue, or white").lower()
+            h.give_hint(None, color_input)
+        elif type_input == "V" or type_input == "v":
+            value_input = int(input("A number 1 - 5"))
+            while value_input > 5 or value_input < 0:
+                print("invalid number")
+                value_input = int(input("A number 1 - 5"))
+            h.give_hint(value_input, None)
+    else:
+        print("Invalid action\n")
+        continue
+    h.change_player()
