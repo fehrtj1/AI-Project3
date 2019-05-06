@@ -1,11 +1,16 @@
 import random
 
+colors = ['green', 'blue', 'yellow', 'red', 'white']
+
 
 class Game:
     def __init__(self, clues, players):
 
         self.discarded_cards = []
         self.active_cards = {}
+
+        for color in colors:
+            self.active_cards[color] = [] # List of cards at that index
 
         self.time_tokens = 8
         self.fuse_tokens = 3
@@ -87,6 +92,7 @@ class Player:
         self.number = number
         self.initial_draw(_deck)
         self.cards_known = [Card(None, None)] * len(self.hand)
+        self.hand_size
 
 
     def discard(self, card_index):
@@ -104,7 +110,7 @@ class Player:
             print("One turn remaining, draw pile empty")
 
     def initial_draw(self, deck):
-        for _ in range(5):
+        for _ in range(self.hand_size):
             self.draw(deck)
 
     def get_optimal_card_to_play(self):
@@ -137,10 +143,15 @@ def create_deck():
     return deck
 
 
+def calculate_final_score(game):
+    score_sum = 0
+    for color in colors:
+        score_sum += max(game.active_cards[color])
+    return score_sum
 
 
 # Game Loop
-_deck = create_deck() # already shuffled
+_deck = create_deck()  # already shuffled
 hanabi = Game([Player(0), Player(1)])
 
 while not hanabi.game_lost:
