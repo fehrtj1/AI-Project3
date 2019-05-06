@@ -20,17 +20,12 @@ class Game:
         if self.time_tokens > 0:
             self.time_tokens -= 1
 
-            if value is not None and color is not None:
-                if value is None and color is None:
-                    for i in card_indices:
-                        if value is None:
-                            self.players[self.other_player_number()].cards_known[i].color = color
-                        if color is None:
-                            self.players[self.other_player_number()].cards_known[i].value = value
-                else:
-                    print("No valid hint information given")
-            else:
-                print("Too much hint information given")
+            if value is None and color is not None or value is not None and color is None:
+                for i in card_indices:
+                    if value is None:
+                        self.players[self.other_player_number()].cards_known[i].color = color
+                    if color is None:
+                        self.players[self.other_player_number()].cards_known[i].value = value
 
             self.change_player()
         else:
