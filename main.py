@@ -31,13 +31,15 @@ class Game:
         else:
             print("No tokens available to give hint")
 
-
     def discard(self, player, card_index):
-        print("Discarding...")
-        self.time_tokens += 1
-        del player.hand[card_index]
-        player.draw(player, _deck)
-        self.change_player()
+        if self.time_tokens < 8:
+            print("Discarding...")
+            self.time_tokens += 1
+            del player.hand[card_index]
+            player.draw(player, _deck)
+            self.change_player()
+        else:
+            print("No tokens available to discard cards")
 
     def play(self, player, card):
 
@@ -55,13 +57,14 @@ class Game:
             print("card not in player's hand")
         self.change_player()
 
-    ###
+    #
 
     def change_player(self):
         self.current_player = ((self.current_player + 1) % len(self.players))
 
     def other_player_number(self):
         return (self.current_player + 1) % len(self.players)
+
 
 class Card:
     def __init__(self, color, value):
@@ -87,7 +90,6 @@ class Player:
         self.number = number
         self.initial_draw(_deck)
         self.cards_known = [Card(None, None)] * len(self.hand)
-
 
     def discard(self, card_index):
         if 0 < card_index < len(self.hand):
@@ -138,8 +140,8 @@ def create_deck():
 
 
 # Game Loop
-_deck = create_deck() # already shuffled
-hanabi = Game([Player(0), Player(1)])
+_deck = create_deck()  # already shuffled
+hanabi = Game([], [Player(0), Player(1)])
 
 while not hanabi.game_lost:
     pass
