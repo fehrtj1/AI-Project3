@@ -20,12 +20,10 @@ class Game:
 
         elif action_number is 1:  # Discard a card
             self.time_tokens += 1
-            self.discard(self, player, )
+            self.discard(player, None)
 
         elif action_number is 2:  # Play a card
-
-
-            self.play(self, player, player.get_optimal_card())
+            self.play(player, player.get_optimal_card())
 
         else:
             print("Not a valid action")
@@ -58,34 +56,40 @@ class Card:
 
 
 class Clue:
-    def __init__(self, color, value, positions, affected_player):
+    def __init__(self, color, value, affected_player):
         self.value = value
         self.color = color
-        self.positions = positions
         self.affected_player = affected_player
-
+        for i in range(len(affected_player.cards_known)):
+            if affected_player.hand[i].color == self.color:
+                affected_player.cards_known[i].color = self.color
+            if affected_player.hand[i].value == self.value:
+                affected_player.cards_known[i].value = self.value
 
 
 class Player:
-
     def __init__(self, hand):
         self.hand = hand
+        self.cards_known = [Card(None, None)] * len(hand)
 
-    def discard(self, card):
-        if card in self.hand:
-            self.hand.remove(card)
+    def discard(self, card_index):
+        if 0 < card_index < len(self.hand):
+            del self.hand[card_index]
+            del self.cards_known[card_index]
             return
         print("ERR: Card not in hand")
 
     def draw(self, deck):
         new_card = deck.pop()
         self.hand.append(new_card)
+        self.cards_known.append(Card(None, None))
         if len(deck) is 0:
             print("One turn remaining, draw pile empty")
 
     def get_optimal_card(self):
         pass
         # do something to judge what card should be played.
+
 
 def create_deck():
     deck_length = 50
@@ -112,18 +116,10 @@ def create_deck():
     return deck
 
 
+# Game Loop
 
-######### Game Loop
-
-deck = create_deck()
-for card in deck:
-    print(str(card.color) + " " + str(card.value))
-#hanabi = Game
-
-
-
-
-#while not
-
-
-
+_deck = create_deck()
+for _card in _deck:
+    print(str(_card.color) + " " + str(_card.value))
+# hanabi = Game
+# while not
