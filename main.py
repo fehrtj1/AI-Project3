@@ -10,7 +10,7 @@ class Game:
         self.time_tokens = 8
         self.fuse_tokens = 3
         self.game_lost = False
-        self.clues = []
+        self.clues = clues
         self.players = players
 
     def turn(self, player, action_number):
@@ -41,7 +41,7 @@ class Game:
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
-                print("Play invalid, igniting fuse number " + cur_fuses + "...")
+                print("Play invalid, igniting fuse number " + str(cur_fuses) + "...")
                 if cur_fuses is 0:
                     self.game_lost = True
                     print("All fuses have been lit, game is over")
