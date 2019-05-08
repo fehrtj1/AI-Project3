@@ -61,8 +61,8 @@ class Game:
 
             # if the card being played is one greater than the last card on that pile,
             # AND they're the same color, we play it
-            if self.active_cards[pile][-1].value is player.hand[card_index].value - 1 and pile is player.hand[card_index].color:
-                self.active_cards[pile].extend(player.hand[card_index])
+            if self.active_cards[pile][-1].value is player.hand[card_index].valure - 1 and pile is player.hand[card_index].color:
+                self.active_cards[pile].append(player.hand[card_index])
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
