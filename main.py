@@ -1,7 +1,11 @@
 import random
 import itertools
 
-colors = ['green', 'blue', 'yellow', 'red', 'white']
+colors = ['blue', 'green', 'red', 'white', 'yellow']
+
+game_state = {
+
+}
 
 class Game:
     def __init__(self, clues, players):
@@ -60,7 +64,7 @@ class Game:
 
             # if the card being played is one greater than the last card on that pile,
             # AND they're the same color, we play it
-            if self.active_cards[pile][-1].value is player.hand[card_index].valure - 1 and pile is player.hand[card_index].color:
+            if self.active_cards[pile][-1].value is (player.hand[card_index].value - 1) and pile is player.hand[card_index].color:
                 self.active_cards[pile].append(player.hand[card_index])
                 if len(sum(self.active_cards.values(), [])) == 25:
                     self.game_lost = True
