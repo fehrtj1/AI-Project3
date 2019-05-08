@@ -20,7 +20,7 @@ class Game:
         self.fuse_tokens = 3
         self.game_over = False
         self.players = players
-        self.current_player = players[0].number
+        self.current_player = players[0].number # always start with player 0
         self.last_turn = False
 
     # Possible moves during a turn
@@ -75,7 +75,7 @@ class Game:
                 self.active_cards[pile].append(player.hand.pop(card_index))
                 player.cards_known.pop(card_index)
                 self.active_cards[pile].append(player.hand[card_index])
-                if len(sum(self.active_cards.values(), [])) == 25:
+                if len(sum(self.active_cards.values(), [])) == len(colors) * 5:
                     self.game_over = True
                     print("Game win")
                     return True
