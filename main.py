@@ -1,5 +1,4 @@
 import random
-import itertools
 
 colors = ['blue', 'green', 'red', 'white', 'yellow']
 
@@ -21,7 +20,7 @@ class Game:
         self.game_lost = False
         self.clues = clues
         self.players = players
-        self.current_player = players[0].number
+        self.current_player = players[0].number # always start with player 0
         self.last_turn = False
 
     # Possible moves during a turn
@@ -66,7 +65,7 @@ class Game:
             # AND they're the same color, we play it
             if self.active_cards[pile][-1].value is (player.hand[card_index].value - 1) and pile is player.hand[card_index].color:
                 self.active_cards[pile].append(player.hand[card_index])
-                if len(sum(self.active_cards.values(), [])) == 25:
+                if len(sum(self.active_cards.values(), [])) == len(colors) * 5:
                     self.game_lost = True
                     print("Game win")
                     return True
