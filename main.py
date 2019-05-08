@@ -17,8 +17,13 @@ for c in game_state['colors']:
     game_state['active'][c] = []  # List of cards at that index
 
 
+def flatten(l):
+    return [item for sublist in l for item in sublist]
+
+
 class Game:
     def __init__(self, players):
+
         self.last_turn = False
         self.players = players
     # Possible moves during a turn
@@ -136,6 +141,9 @@ class Card:
     def __str__(self):
         return self.color + " - " + str(self.value)
 
+    def __eq__(self, other):
+        return self.color is other.color and self.value is other.value
+
 
 class Player:
     def __init__(self, number):
@@ -179,10 +187,10 @@ class AIPlayer(Player):
         return None
 
     def ai_decide_action_play_card(self, game):
-        return 0,
+        return None, None
 
     def ai_decide_action_give_hint(self, game):
-        return None
+        return None, None
 
     def ai_decide_action_discard_card(self, game):
 
