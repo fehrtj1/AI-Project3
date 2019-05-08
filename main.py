@@ -56,12 +56,13 @@ class Game:
                 player.cards_known[i].value = value
 
     def discard(self, player, card_index):
-        if game_state['hints'] < 8 and card_index in range(5):
+        if game_state['hints'] < 8 and card_index in range(len(player.hand)):
             game_state['hints'] += 1
-            game_state['discarded'].append(player.hand.pop(card_index))
+            game_state['discarded'].append(player.hand[card_index])
             player.cards_known[card_index] = None
+            player.hand[card_index] = None
             game_state['recent_draw_index'] = card_index
-            player.draw(player, game_state['deck'])
+            self.draw(player)
             self.change_player()
             return True
         else:
@@ -77,9 +78,13 @@ class Game:
 
             # if the card being played is one greater than the last card on that pile,
             # AND they're the same color, we play it
-            if game_state['active'][pile][-1].value is (player.hand[card_index].value - 1) and pile is player.hand[card_index].color:
-                game_state['active'][pile].append(player.hand.pop(card_index))
-                player.cards_known.pop(card_index)
+            if player.hand[card_index].value is 1 or not game_state['active'][pile] \
+                    or (game_state['active'][pile][-1].value is (player.hand[card_index].value - 1) and pile is player.hand[card_index].color):
+                game_state['active'][pile].append(player.hand[card_index])
+                player.cards_known[card_index] = None
+                player.hand[card_index] = None
+                game_state['recent_draw_index'] = card_index
+                self.draw(player)
             else:
                 game_state['fuses'] -= 1
                 cur_fuses = 3 - game_state['fuses']
@@ -126,7 +131,7 @@ class Game:
         if answer:
             score_sum = 0
             for color in game_state['colors']:
-                score_sum += max(game_state['active'][color])
+                score_sum += max(get_values(game_state['active'][color]) if game_state['active'][color] else [0])
             print("GAME OVER\nFinal score is " + str(score_sum))
         return answer
 
@@ -181,6 +186,13 @@ class Card:
         if self is None or other is None:
             return False
         return self.color is other.color and self.value is other.value
+
+
+def get_values(cards):
+    ret = []
+    for card in cards:
+        ret.append(card.value)
+    return ret
 
 
 class Player:
@@ -296,9 +308,9 @@ class AIPlayer(Player):
             return None, rand_color
         else:
             weighted_list = [1, 1, 1, 2, 2, 3, 3, 4, 4, 5]
-            rand_value = weighted_list[random.randint(0, 10)]
+            rand_value = weighted_list[random.randint(0, 9)]
             while game.players[game.other_player_number()].num_cards(None, rand_value) <= 0 < game.players[game.other_player_number()].num_known_cards(None, rand_value):
-                rand_value = weighted_list[random.randint(0, 10)]
+                rand_value = weighted_list[random.randint(0, 9)]
             return rand_value, None
             # Give value hint
 
@@ -315,13 +327,12 @@ class AIPlayer(Player):
 
             # If we have full info on a card
             if card.color is not None and card.value is not None:
-                for color in game_state['colors']:
-
+                if card.value is 1 or not game_state['active'][card.color]:
+                    return card
+                else:
                     # and if that card has a valid position to play on
-
-                    active_card = game_state['active'][color][-1] if 
-                    if active_card.value is card.value - 1 and active_card.color is card.color:
-
+                    active_card = game_state['active'][card.color][-1]
+                    if active_card.value is card.value - 1:
                         # return it to play on
                         return card
 
