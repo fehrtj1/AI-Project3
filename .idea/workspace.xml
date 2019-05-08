@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="936f01bf-9c2a-4e70-aab1-0224cdb1c1ea" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,11 +15,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="274">
-              <caret line="324" column="65" lean-forward="true" selection-start-line="324" selection-start-column="65" selection-end-line="324" selection-end-column="65" />
+            <state relative-caret-position="308">
+              <caret line="340" column="82" selection-start-line="340" selection-start-column="82" selection-end-line="340" selection-end-column="82" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
-                <element signature="e#8242#10717#2" />
               </folding>
             </state>
           </provider>
@@ -149,7 +147,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="41480000" />
+    <option name="totallyTimeSpent" value="42604000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -192,11 +190,10 @@
     <entry file="file://$PROJECT_DIR$/ai.py" />
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="274">
-          <caret line="324" column="65" lean-forward="true" selection-start-line="324" selection-start-column="65" selection-end-line="324" selection-end-column="65" />
+        <state relative-caret-position="308">
+          <caret line="340" column="82" selection-start-line="340" selection-start-column="82" selection-end-line="340" selection-end-column="82" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
-            <element signature="e#8242#10717#2" />
           </folding>
         </state>
       </provider>

@@ -378,20 +378,21 @@ h = Game([AIPlayer(0), AIPlayer(1)])
 while not game_state['game_over']:
     initial_action = h.players[game_state['current_player']].ai_decide_initial_action(h)
     if initial_action == "p":
-        print("AI Player " + str(game_state['current_player']) + " playing a card")
+        print("AI Player " + str(game_state['current_player']) + " playing a card\n")
         _card_num, _pile = h.players[game_state['current_player']].ai_decide_action_play_card(h)
         if not h.play(h.players[game_state['current_player']], _card_num, _pile):
             print("Player failed to play card!")
             exit()
     elif initial_action == "d":
-        print("AI Player " + str(game_state['current_player']) + " playing a card")
+        print("AI Player " + str(game_state['current_player']) + " discarding a card\n")
         _card_num = h.players[game_state['current_player']].ai_decide_action_discard_card(h)
         if not h.discard(h.players[game_state['current_player']], _card_num):
             print("Player failed to discard card!")
             exit()
     elif initial_action == "h":
-        print("AI Player " + str(game_state['current_player']) + " giving a hint")
+        print("AI Player " + str(game_state['current_player']) + " giving a hint\n")
         _value, _color = h.players[game_state['current_player']].ai_decide_action_give_hint(h)
+        print("Hint was " + (str(_value) if _value is not None else _color) + "\n")
         if not h.give_hint(_value, _color):
             print("Player failed to give hint!")
             exit()
