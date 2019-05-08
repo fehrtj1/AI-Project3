@@ -1,4 +1,5 @@
 import random
+import functools
 from sys import exit
 
 game_state = {
@@ -26,6 +27,7 @@ class Game:
 
         self.last_turn = False
         self.players = players
+        self.max_playable = 25
     # Possible moves during a turn
 
     def give_hint(self, value, color):  # Pass None for one since only one piece may be given
@@ -78,6 +80,8 @@ class Game:
                 game_state['active'][pile].append(player.hand.pop(card_index))
                 player.cards_known.pop(card_index)
                 game_state['active'][pile].append(player.hand[card_index])
+
+
 
             else:
                 game_state['fuses'] -= 1
@@ -132,6 +136,35 @@ class Game:
     def other_player_number(self):
         return (game_state['current_player'] + 1) % len(self.players)
 
+    def is_early(self):
+        ones = self.n_value_needed(1)
+        twos = self.n_value_needed(2)
+
+        if ones >= 3 or twos 
+
+    def is_mid(self):
+        pass
+
+    def is_late(self):
+        pass
+
+    # returns the number of cards needed of a given value in the current active cards
+    def n_value_needed(self, v):
+        n = 0
+
+        if v < 1 or v > 5:
+            print("value error")
+            return 0
+
+        v = None if v is 1 else (v - 1)
+
+        for color in game_state['colors']:
+            n = n + 1 if game_state['active'][color][-1].value is v else 0
+        return n
+
+
+
+
 
 class Card:
     def __init__(self, color, value):
@@ -181,7 +214,7 @@ class AIPlayer(Player):
 
         decision = -1
 
-        if game_state['hints'] is 0:
+        if game_state['hints'] is 0 and :
             self.ai_decide_action_discard_card(game)
 
         return None
@@ -195,6 +228,14 @@ class AIPlayer(Player):
     def ai_decide_action_discard_card(self, game):
 
         return None
+
+    def have_playable_card(self):
+
+        for card in self.cards_known:
+            if card.color is not None and card.value is not None:
+                for color in game_state['colors']:
+
+
 
 
 def create_deck():
