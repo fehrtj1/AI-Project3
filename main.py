@@ -10,7 +10,8 @@ game_state = {
     'game_over': False,
     'current_player': 0,
     'deck': [],
-    'hand_size': 5
+    'hand_size': 5,
+    'recent_draw_index': -1
 }
 
 for c in game_state['colors']:
@@ -58,12 +59,13 @@ class Game:
         if game_state['hints'] < 8 and card_index in range(5):
             game_state['hints'] += 1
             game_state['discarded'].append(player.hand.pop(card_index))
-            player.cards_known.pop(card_index)
+            player.cards_known[card_index] = None
+            game_state['recent_draw_index'] = card_index
             player.draw(player, game_state['deck'])
             self.change_player()
             return True
         else:
-            print("Either no tokens or not a valid")
+            print("Error on discard with " + str(game_state['hints']) + " tokens or " + str(card_index) + " not a valid index")
             return False
 
     # player = one playing the card
@@ -91,10 +93,13 @@ class Game:
 
     @staticmethod
     def draw(player):
-        if len(game_state['deck']) >= 1:
+        if len(game_state['deck']) > 0:
             new_card = game_state['deck'].pop()
-            player.hand[player.hand.index(None)] = new_card
-            player.cards_known.append(Card(None, None))
+
+            index_changed = game_state['recent_draw_index']
+
+            player.hand[index_changed] = new_card
+            player.cards_known[index_changed] = Card(None, None)
             return True
 
         else:
@@ -262,7 +267,7 @@ class AIPlayer(Player):
             return self.actions[0]
 
         if game_state['hints'] >= 4 and not self.is_cards_known_complete():
-            decision = 1
+            return self.actions[1]
 
         # If we have no hint tokens and we have no plays, we are practically forced to discard
         # Improvements would take into account late game and fuse count to guess a likely (say, 50% + 15%*fuse count)
@@ -314,7 +319,7 @@ class AIPlayer(Player):
 
                     # and if that card has a valid position to play on
 
-                    active_card = game_state['active'][color][-1]
+                    active_card = game_state['active'][color][-1] if 
                     if active_card.value is card.value - 1 and active_card.color is card.color:
 
                         # return it to play on
