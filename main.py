@@ -151,7 +151,7 @@ class Game:
             return None
 
         # For example, if we need a 4, that means there are 3's on top of a pile, so we subtract 1
-        # None signifies we need a 1 in that spot. i.e. No cards have been played yet there 
+        # None signifies we need a 1 in that spot. i.e. No cards have been played yet there
         v = None if v is 1 else (v - 1)
 
         n = 0
@@ -178,7 +178,6 @@ class Player:
         self.hand = []
         self.cards_known = []
         self.number = number
-        game_state['hand_size'] = 5
         self.initial_draw()
 
     def num_cards(self, color, value):
@@ -349,7 +348,7 @@ class AIPlayer(Player):
             if card.color is not None and card.value is not None:
                 sum += 1
 
-        return True if sum is 5 else False
+        return True if sum is game_state['hand_size'] else False
 
     def get_first_useless(self):
         for card in self.cards_known:
