@@ -137,16 +137,17 @@ class Game:
         return (game_state['current_player'] + 1) % len(self.players)
 
     def is_early(self):
-        ones = self.n_value_needed(1)
-        twos = self.n_value_needed(2)
-
-        if ones >= 3 or twos 
+        cards_left = 25 - len(flatten(game_state['active'].values()))
+        return 25 >= cards_left >= 17
 
     def is_mid(self):
-        pass
+        cards_left = 25 - len(flatten(game_state['active'].values()))
+        return 16 >= cards_left >= 10
 
     def is_late(self):
-        pass
+        cards_left = 25 - len(flatten(game_state['active'].values()))
+        return 9 >= cards_left >= 0
+
 
     # returns the number of cards needed of a given value in the current active cards
     def n_value_needed(self, v):
@@ -159,7 +160,7 @@ class Game:
         v = None if v is 1 else (v - 1)
 
         for color in game_state['colors']:
-            n = n + 1 if game_state['active'][color][-1].value is v else 0
+            n = n + (1 if game_state['active'][color][-1].value is v else 0)
         return n
 
 
@@ -175,7 +176,7 @@ class Card:
         return self.color + " - " + str(self.value)
 
     def __eq__(self, other):
-        return self.color is other.color and self.value is other.value
+        return self.color is other.color and self.value is other.value and self.value is not None and self.color is not None
 
 
 class Player:
