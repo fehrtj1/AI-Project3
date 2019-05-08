@@ -39,15 +39,16 @@ class Game:
             return False
 
     def discard(self, player, card_index):
-        if self.time_tokens < 8:
-            print("Discarding...")
+        if self.time_tokens < 8 and card_index in range(5):
             self.time_tokens += 1
             self.discarded_cards.append(player.hand.pop(card_index))
             player.cards_known.pop(card_index)
             player.draw(player, _deck)
             self.change_player()
+            return True
         else:
-            print("No tokens available to discard cards")
+            print("Either no tokens or not a valid")
+            return False
 
     # player = one playing the card
     # card_index = which card in player hand
@@ -58,8 +59,8 @@ class Game:
 
             # if the card being played is one greater than the last card on that pile,
             # AND they're the same color, we play it
-            if self.active_cards[pile][-1].value is player.hand[card_index].value - 1 and pile is player.hand[card_index].color:
-                self.active_cards[pile].extend(player.hand[card_index])
+            if self.active_cards[pile][-1].value is player.hand[card_index].valure - 1 and pile is player.hand[card_index].color:
+                self.active_cards[pile].append(player.hand[card_index])
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
@@ -67,23 +68,24 @@ class Game:
                 if cur_fuses is 0:
                     self.game_lost = True
                     print("All fuses have been lit, game is over")
+
+            self.change_player()
+            return True
         else:
             print("card not in player's hand")
-        self.change_player()
+            return False
 
     def draw(self, player):
-        new_card = _deck.pop()
 
-        for card in player.hand:
-            if card is None:
-                self.hand[self.hand.index(None)] = new_card
-
-        self.cards_known.append(Card(None, None))
-        if len(_deck) is 0:
-            print("One turn remaining, draw pile empty")
-            self.last_turn = True
-
-    #
+        if len(_deck) >= 1:
+            new_card = _deck.pop()
+            player.hand[player.hand.index(None)] = new_card
+            self.cards_known.append(Card(None, None))
+            if len(_deck) is 0:
+                print("One turn remaining, draw pile empty")
+                self.last_turn = True
+        else:
+            print("Game should have already ended")
 
     def change_player(self):
         self.current_player = ((self.current_player + 1) % len(self.players))
