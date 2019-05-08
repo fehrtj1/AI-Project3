@@ -2,7 +2,6 @@ import random
 
 colors = ['green', 'blue', 'yellow', 'red', 'white']
 
-
 class Game:
     def __init__(self, clues, players):
 
@@ -18,10 +17,11 @@ class Game:
         self.clues = clues
         self.players = players
         self.current_player = players[0].number
+        self.last_turn = False
 
     # Possible moves during a turn
 
-    def give_hint(self, value, color):  # Pass None for one since only one piece may be given
+    def give_hint(self, player, value, color):  # Pass None for one since only one piece may be given
         if self.time_tokens > 0:
             self.time_tokens -= 1
 
@@ -33,34 +33,61 @@ class Game:
             else:
                 print("Too much or not enough hint information")
             self.change_player()
+            return True
         else:
             print("No tokens available to give hint")
+            return False
 
     def discard(self, player, card_index):
         if self.time_tokens < 8:
             print("Discarding...")
             self.time_tokens += 1
-            del player.hand[card_index]
+            player.hand[card_index] = None
             player.draw(player, _deck)
             self.change_player()
         else:
             print("No tokens available to discard cards")
 
-    def play(self, player, card):
+    # player = one playing the card
+    # card_index = which card in player hand
+    # pile = where to play that card, is a color
+    def play(self, player, card_index, pile):
 
-        if card in player.hand:
-            if self.active_cards[card.color][-1] is (card.value - 1):
-                self.active_cards[card.color].extend(card.value)
+        if card_index in range(5):
+
+            # if the card being played is one greater than the last card on that pile,
+            # AND they're the same color, we play it
+            if self.active_cards[pile][-1].value is player.hand[card_index].value - 1 and pile is player.hand[card_index].color:
+                self.active_cards[pile].extend(player.hand[card_index])
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
-                print("Play invalid, igniting fuse number " + str(cur_fuses) + "...")
+                print("Play invalid: either value or color does not follow\nIgniting fuse number " + str(cur_fuses) + "...")
                 if cur_fuses is 0:
                     self.game_lost = True
                     print("All fuses have been lit, game is over")
         else:
             print("card not in player's hand")
         self.change_player()
+
+    def discard(self, player, card_index):
+        if 0 < card_index < len(player.hand):
+            player.hand[card_index] = None
+            player.cards_known[card_index] = None
+            return
+        print("Card not in hand")
+
+    def draw(self, player):
+        new_card = _deck.pop()
+
+        for card in player.hand:
+            if card is None:
+                self.hand[self.hand.index(None)] = new_card
+
+        self.cards_known.append(Card(None, None))
+        if len(_deck) is 0:
+            print("One turn remaining, draw pile empty")
+            self.last_turn = True
 
     #
 
@@ -100,20 +127,6 @@ class Player:
         self.hand_size = 5
         self.initial_draw(_deck)
 
-    def discard(self, card_index):
-        if 0 < card_index < len(self.hand):
-            del self.hand[card_index]
-            del self.cards_known[card_index]
-            return
-        print("Card not in hand")
-
-    def draw(self, deck):
-        new_card = deck.pop()
-        self.hand.append(new_card)
-        self.cards_known.append(Card(None, None))
-        if len(deck) is 0:
-            print("One turn remaining, draw pile empty")
-
     def print_hand(self):
         i = 0
         for card in self.cards_known:
@@ -125,13 +138,11 @@ class Player:
         for card in self.hand:
             print(card.color + " - " + str(card.value) + "\n")
 
-    def initial_draw(self, deck):
+    # Draw 5 at the start of the game
+    def initial_draw(self):
         for _ in range(self.hand_size):
-            self.draw(deck)
+            _deck.pop()
 
-    def get_optimal_card_to_play(self):
-        pass
-        # do something to judge what card should be played.
 
 
 def create_deck():
