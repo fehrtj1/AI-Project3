@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="936f01bf-9c2a-4e70-aab1-0224cdb1c1ea" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="936f01bf-9c2a-4e70-aab1-0224cdb1c1ea" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,8 +13,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="340" column="82" selection-start-line="340" selection-start-column="82" selection-end-line="340" selection-end-column="82" />
+            <state relative-caret-position="-410">
+              <caret line="248" lean-forward="true" selection-start-line="248" selection-end-line="248" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -147,11 +145,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="42604000" />
+    <option name="totallyTimeSpent" value="44184000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.5173979" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -167,7 +164,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.049099836" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50075644" side_tool="true" weight="0.5564648" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.67757773" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.67757773" />
       <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49924356" weight="0.5564648" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -190,8 +187,8 @@
     <entry file="file://$PROJECT_DIR$/ai.py" />
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="340" column="82" selection-start-line="340" selection-start-column="82" selection-end-line="340" selection-end-column="82" />
+        <state relative-caret-position="-410">
+          <caret line="248" lean-forward="true" selection-start-line="248" selection-end-line="248" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
