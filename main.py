@@ -322,7 +322,7 @@ class AIPlayer(Player):
                         # return it to play on
                         return card
 
-        # Also need to perform process of elimination to see if a card appears that way as well, but this project scope creeped us so hard
+        # Also need to perform process of elimination to see if a card appears that way as well, but this project scope crept us so hard
         return None
 
     def is_cards_known_complete(self):
