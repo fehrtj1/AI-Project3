@@ -10,7 +10,7 @@ class Game:
         self.active_cards = {}
 
         for color in colors:
-            self.active_cards[color] = [] # List of cards at that index
+            self.active_cards[color] = []  # List of cards at that index
 
         self.time_tokens = 8
         self.fuse_tokens = 3
@@ -154,15 +154,18 @@ def create_deck():
     random.shuffle(deck)
     return deck
 
+
 def calculate_final_score(game):
     score_sum = 0
     for color in colors:
         score_sum += max(game.active_cards[color])
     return score_sum
 
+
 # Game Loop
 _deck = create_deck()  # already shuffled
 h = Game([], [Player(0), Player(1)])
+
 
 while not h.game_lost:
     h.players[h.current_player].draw(_deck)
