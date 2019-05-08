@@ -271,8 +271,6 @@ class AIPlayer(Player):
         if game_state['hints'] is 0 and potential_play is None:
             decision = 2
 
-
-
         decision = 1 if decision is -1 and game_state['hints'] > 0 else 2
         return self.actions[decision]
 
