@@ -1,8 +1,12 @@
 import random
 from sys import exit
-from ai import *
+from ai import AIPlayer
 
-colors = ['green', 'blue', 'yellow', 'red', 'white']
+colors = ['blue', 'green', 'red', 'white', 'yellow']
+
+game_state = {
+
+}
 
 
 class Game:
@@ -21,7 +25,7 @@ class Game:
 
     # Possible moves during a turn
 
-    def give_hint(self, player, value, color):  # Pass None for one since only one piece may be given
+    def give_hint(self, value, color):  # Pass None for one since only one piece may be given
         if self.time_tokens > 0:
             self.time_tokens -= 1
 
@@ -67,15 +71,14 @@ class Game:
 
             # if the card being played is one greater than the last card on that pile,
             # AND they're the same color, we play it
-            if self.active_cards[pile][-1].value is player.hand[card_index].value - 1 and pile is player.hand[card_index].color:
+            if self.active_cards[pile][-1].value is (player.hand[card_index].value - 1) and pile is player.hand[card_index].color:
                 self.active_cards[pile].append(player.hand.pop(card_index))
                 player.cards_known.pop(card_index)
-                # Check to see if that was the last card
-                should_game_over = True
-                for pile in self.active_cards:
-                    if len(pile) != 5:
-                        should_game_over = False
-                self.game_over = should_game_over
+                self.active_cards[pile].append(player.hand[card_index])
+                if len(sum(self.active_cards.values(), [])) == 25:
+                    self.game_over = True
+                    print("Game win")
+                    return True
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
@@ -99,8 +102,10 @@ class Game:
             if len(_deck) is 0:
                 print("One turn remaining, draw pile empty")
                 self.last_turn = True
+            return True
         else:
             print("Game should have already ended")
+            return False
 
     def change_player(self):
         self.current_player = ((self.current_player + 1) % len(self.players))
@@ -182,19 +187,19 @@ while not h.game_over:
     initial_action = h.players[h.current_player].ai_decide_initial_action(h)
     if initial_action == "p":
         print("AI Player " + h.current_player + " playing a card")
-        card_num, pile = h.players[h.current_player].ai_decide_action_play_card(h)
-        if not h.play(h.players[h.current_player], card_num, pile):
+        _card_num, _pile = h.players[h.current_player].ai_decide_action_play_card(h)
+        if not h.play(h.players[h.current_player], _card_num, _pile):
             print("Player failed to play card!")
             exit()
     elif initial_action == "d":
         print("AI Player " + h.current_player + " playing a card")
-        card_num = h.players[h.current_player].ai_decide_action_discard_card(h)
-        if not h.discard(h.players[h.current_player], card_num):
+        _card_num = h.players[h.current_player].ai_decide_action_discard_card(h)
+        if not h.discard(h.players[h.current_player], _card_num):
             print("Player failed to discard card!")
             exit()
     elif initial_action == "h":
         print("AI Player " + h.current_player + " giving a hint")
-        value, color = h.players[h.current_player].ai_decide_action_give_hint(h)
-        if not h.give_hint(h.players[h.current_player], value, color):
+        _value, _color = h.players[h.current_player].ai_decide_action_give_hint(h)
+        if not h.give_hint(_value, _color):
             print("Player failed to give hint!")
             exit()
