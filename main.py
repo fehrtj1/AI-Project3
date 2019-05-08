@@ -89,7 +89,8 @@ class Game:
             print("card not in player's hand")
             return False
 
-    def draw(self, player):
+    @staticmethod
+    def draw(player):
         if len(_deck) >= 1:
             new_card = _deck.pop()
             player.hand[player.hand.index(None)] = new_card
@@ -100,7 +101,8 @@ class Game:
             print("Game should have already ended")
             return False
 
-    def is_over(self):
+    @staticmethod
+    def is_over():
 
         answer = False
 
@@ -140,11 +142,13 @@ class Game:
         return 9 >= 25 - self.get_active_card_count() >= 0
 
     # Returns how many cards are in the piles
-    def get_active_card_count(self):
+    @staticmethod
+    def get_active_card_count():
         return len(flatten(game_state['active'].values()))
 
     # Returns the number of cards needed of a given value in the current active cards across all piles
-    def n_value_needed(self, v):
+    @staticmethod
+    def n_value_needed(v):
 
         if v < 1 or v > 5:
             print("Value Error: Card value does not exist.")
@@ -247,7 +251,7 @@ class AIPlayer(Player):
         super().__init__(number)
         self.actions = ['p', 'h', 'd']
 
-    def ai_decide_initial_action(self, game):
+    def ai_decide_initial_action(self):
 
         potential_play = self.have_playable_card()
         decision = -1
@@ -272,12 +276,13 @@ class AIPlayer(Player):
 
         return self.actions[decision]
 
-    def ai_decide_action_play_card(self, game):
+    def ai_decide_action_play_card(self):
         play = self.have_playable_card()
         index_of_play = self.hand.index(play)
         return index_of_play, play.color
 
-    def ai_decide_action_give_hint(self, game):
+    @staticmethod
+    def ai_decide_action_give_hint(game):
         random.seed()
         # Randomly pick if we should give a color hint or a value hint
         if random.random() > 0.6:
@@ -294,8 +299,7 @@ class AIPlayer(Player):
             return rand_value, None
             # Give value hint
 
-
-    def ai_decide_action_discard_card(self, game):
+    def ai_decide_action_discard_card(self):
 
         index_to_discard = self.hand.index(self.get_first_useless())
 
@@ -322,12 +326,12 @@ class AIPlayer(Player):
         return None
 
     def is_cards_known_complete(self):
-        sum = 0
+        _sum = 0
         for card in self.cards_known:
             if card.color is not None and card.value is not None:
-                sum += 1
+                _sum += 1
 
-        return True if sum is game_state['hand_size'] else False
+        return True if _sum is game_state['hand_size'] else False
 
     def get_first_useless(self):
         for card in self.cards_known:
@@ -337,8 +341,8 @@ class AIPlayer(Player):
                 return card
         return None
 
-
-    def get_used_list(self):
+    @staticmethod
+    def get_used_list():
         used = []
         for card in game_state['discarded']:
             used.append(card)
@@ -347,6 +351,7 @@ class AIPlayer(Player):
             for card in game_state['active'][color]:
                 used.append(card)
         return used
+
 
 def create_deck():
     deck_length = 50
@@ -376,22 +381,22 @@ _deck = create_deck()  # already shuffled
 h = Game([AIPlayer(0), AIPlayer(1)])
 
 while not game_state['game_over']:
-    initial_action = h.players[game_state['current_player']].ai_decide_initial_action(h)
+    initial_action = h.players[game_state['current_player']].ai_decide_initial_action()
     if initial_action == "p":
         print("AI Player " + str(game_state['current_player']) + " playing a card\n")
-        _card_num, _pile = h.players[game_state['current_player']].ai_decide_action_play_card(h)
+        _card_num, _pile = h.players[game_state['current_player']].ai_decide_action_play_card()
         if not h.play(h.players[game_state['current_player']], _card_num, _pile):
             print("Player failed to play card!")
             exit()
     elif initial_action == "d":
         print("AI Player " + str(game_state['current_player']) + " discarding a card\n")
-        _card_num = h.players[game_state['current_player']].ai_decide_action_discard_card(h)
+        _card_num = h.players[game_state['current_player']].ai_decide_action_discard_card()
         if not h.discard(h.players[game_state['current_player']], _card_num):
             print("Player failed to discard card!")
             exit()
     elif initial_action == "h":
         print("AI Player " + str(game_state['current_player']) + " giving a hint\n")
-        _value, _color = h.players[game_state['current_player']].ai_decide_action_give_hint(h)
+        _value, _color = AIPlayer.ai_decide_action_give_hint(h)
         print("Hint was " + (str(_value) if _value is not None else _color) + "\n")
         if not h.give_hint(_value, _color):
             print("Player failed to give hint!")
