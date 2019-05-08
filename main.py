@@ -1,6 +1,6 @@
 import random
 
-colors = ["red", "yellow", "green", "blue", "white"]
+colors = ['green', 'blue', 'yellow', 'red', 'white']
 
 
 class Game:
@@ -8,6 +8,9 @@ class Game:
 
         self.discarded_cards = []
         self.active_cards = {}
+
+        for color in colors:
+            self.active_cards[color] = [] # List of cards at that index
 
         self.time_tokens = 8
         self.fuse_tokens = 3
@@ -92,6 +95,7 @@ class Player:
         self.cards_known = []
         self.number = number
         self.initial_draw(_deck)
+        self.hand_size = 5
 
     def discard(self, card_index):
         if 0 < card_index < len(self.hand):
@@ -119,7 +123,7 @@ class Player:
             print(card.color + " - " + str(card.value) + "\n")
 
     def initial_draw(self, deck):
-        for _ in range(5):
+        for _ in range(self.hand_size):
             self.draw(deck)
 
     def get_optimal_card_to_play(self):
@@ -150,6 +154,11 @@ def create_deck():
     random.shuffle(deck)
     return deck
 
+def calculate_final_score(game):
+    score_sum = 0
+    for color in colors:
+        score_sum += max(game.active_cards[color])
+    return score_sum
 
 # Game Loop
 _deck = create_deck()  # already shuffled
