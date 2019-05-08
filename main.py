@@ -244,6 +244,7 @@ class Player:
     def initial_draw(self):
         for _ in range(game_state['hand_size']):
             self.hand.append(_deck.pop())
+            self.cards_known.append(Card(None, None))
 
 
 class AIPlayer(Player):
@@ -266,44 +267,22 @@ class AIPlayer(Player):
         return None, None
 
     def ai_decide_action_give_hint(self, game):
-        counts = []
-        # Count how many times each card shows up on the field
-        for i in range(1, len(game_state['colors']) + 1):
-            counts.append(flatten(game_state['active'].values()).count(i))
-        # no ones on the table
-        if (0 < game.players[game.other_player_number()].num_cards(None, 1) !=
-            game.players[game.other_player_number()].num_known_cards(None, 1)) and \
-                (counts[0] < 3 or (counts[0] >= 3 and game.players[game.other_player_number()].num_cards(None, 1) > 1)):
-            return 1, None
-        if (0 < game.players[game.other_player_number()].num_cards(None, 2) !=
-            game.players[game.other_player_number()].num_known_cards(None, 2)):
-            return 2, None
-        if (0 < game.players[game.other_player_number()].num_cards(None, 3) !=
-            game.players[game.other_player_number()].num_known_cards(None, 3)):
-            return 3, None
-        if (0 < game.players[game.other_player_number()].num_cards(None, 4) !=
-            game.players[game.other_player_number()].num_known_cards(None, 4)):
-            return 4, None
-        if (0 < game.players[game.other_player_number()].num_cards(None, 5) !=
-            game.players[game.other_player_number()].num_known_cards(None, 5)):
-            return 5, None
-        if (0 < game.players[game.other_player_number()].num_cards('blue', None) !=
-            game.players[game.other_player_number()].num_known_cards('blue', None)):
-            return None, 'blue'
-        if (0 < game.players[game.other_player_number()].num_cards('green', None) !=
-            game.players[game.other_player_number()].num_known_cards('green', None)):
-            return None, 'green'
-        if (0 < game.players[game.other_player_number()].num_cards('red', None) !=
-            game.players[game.other_player_number()].num_known_cards('red', None)):
-            return None, 'red'
-        if (0 < game.players[game.other_player_number()].num_cards('white', None) !=
-            game.players[game.other_player_number()].num_known_cards('white', None)):
-            return None, 'white'
-        if (0 < game.players[game.other_player_number()].num_cards('yellow', None) !=
-            game.players[game.other_player_number()].num_known_cards('yellow', None)):
-            return None, 'yellow'
+        random.seed()
+        # Randomly pick if we should give a color hint or a value hint
+        if random.random() > 0.6:
+            # Give color hint
+            rand_color = game_state['colors'][random.randint(0, len(game_state['colors']))]
+            while game.players[game.other_player_number()].num_cards(rand_color, None) <= 0 < game.players[game.other_player_number()].num_known_cards(rand_color, None):
+                rand_color = game_state['colors'][random.randint(0, len(game_state['colors']))]
+            return None, rand_color
+        else:
+            weighted_list = [1, 1, 1, 2, 2, 3, 3, 4, 4, 5]
+            rand_value = weighted_list[random.randint(0, 10)]
+            while game.players[game.other_player_number()].num_cards(None, rand_value) <= 0 < game.players[game.other_player_number()].num_known_cards(None, rand_value):
+                rand_value = weighted_list[random.randint(0, 10)]
+            return rand_value, None
+            # Give value hint
 
-        return None, None
 
     def ai_decide_action_discard_card(self, game):
 
