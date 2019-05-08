@@ -1,6 +1,5 @@
 import random
 from sys import exit
-from ai import AIPlayer
 
 colors = ['blue', 'green', 'red', 'white', 'yellow']
 
@@ -167,6 +166,23 @@ class Player:
     def initial_draw(self):
         for _ in range(self.hand_size):
             self.hand.append(_deck.pop())
+
+
+class AIPlayer(Player):
+    # NEVER LET THE AI SEE THEIR OWN HAND
+
+    def ai_decide_initial_action(self, game):
+        #if game.discarded_cards.is_empty() and game.active_cards.values()
+        return None
+
+    def ai_decide_action_play_card(self, game):
+        return 0,
+
+    def ai_decide_action_give_hint(self, game):
+        return None
+
+    def ai_decide_action_discard_card(self, game):
+        return None
 
 
 def create_deck():
