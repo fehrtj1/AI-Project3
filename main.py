@@ -76,6 +76,9 @@ class Card:
         self.color = color
         self.value = value
 
+    def __str__(self):
+        return self.color + " - " + str(self.value)
+
 
 class Clue:
     def __init__(self, color, value, affected_player):
@@ -94,8 +97,8 @@ class Player:
         self.hand = []
         self.cards_known = []
         self.number = number
-        self.initial_draw(_deck)
         self.hand_size = 5
+        self.initial_draw(_deck)
 
     def discard(self, card_index):
         if 0 < card_index < len(self.hand):
@@ -136,14 +139,13 @@ def create_deck():
     deck = []
     for color in colors:
         for i in range(10):
-
-            if i is 0 or 1 or 2:
+            if i == 0 or i == 1 or i == 2:
                 deck.append(Card(color, 1))
-            elif i is 3 or 4:
+            elif i == 3 or i == 4:
                 deck.append(Card(color, 2))
-            elif i is 5 or 6:
+            elif i == 5 or i == 6:
                 deck.append(Card(color, 3))
-            elif i is 7 or 8:
+            elif i == 7 or i == 8:
                 deck.append(Card(color, 4))
             else:
                 deck.append(Card(color, 5))
