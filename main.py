@@ -59,7 +59,7 @@ class Game:
             game_state['hints'] += 1
             game_state['discarded'].append(player.hand.pop(card_index))
             player.cards_known.pop(card_index)
-            player.draw(player, _deck)
+            player.draw(player, game_state['deck'])
             self.change_player()
             return True
         else:
@@ -91,8 +91,8 @@ class Game:
 
     @staticmethod
     def draw(player):
-        if len(_deck) >= 1:
-            new_card = _deck.pop()
+        if len(game_state['deck']) >= 1:
+            new_card = game_state['deck'].pop()
             player.hand[player.hand.index(None)] = new_card
             player.cards_known.append(Card(None, None))
             return True
@@ -110,7 +110,7 @@ class Game:
             game_state['game_over'] = True
             answer = True
 
-        if len(_deck) is 0:
+        if len(game_state['deck']) is 0:
             answer = True
 
         if len(sum(game_state['active'].values(), [])) == len(game_state['colors']) * 5:
@@ -155,8 +155,7 @@ class Game:
             return None
 
         # For example, if we need a 4, that means there are 3's on top of a pile, so we subtract 1
-        # None signifies we need a 1 in that spot. i.e. No cards have been played yet there
-        v = None if v is 1 else (v - 1)
+        v -= 1
 
         n = 0
 
@@ -240,7 +239,7 @@ class Player:
     # Draw 5 at the start of the game
     def initial_draw(self):
         for _ in range(game_state['hand_size']):
-            self.hand.append(_deck.pop())
+            self.hand.append(game_state['deck'].pop())
             self.cards_known.append(Card(None, None))
 
 
@@ -256,7 +255,11 @@ class AIPlayer(Player):
         potential_play = self.have_playable_card()
         decision = -1
 
-        if game_state['hints'] >= 1 and not self.is_cards_known_complete():
+        # Play if we have full information on a valid card. This is always the optimal play and so it has priority
+        if potential_play is not None:
+            return self.actions[0]
+
+        if game_state['hints'] >= 4 and not self.is_cards_known_complete():
             decision = 1
 
         # If we have no hint tokens and we have no plays, we are practically forced to discard
@@ -266,14 +269,9 @@ class AIPlayer(Player):
         if game_state['hints'] is 0 and potential_play is None:
             decision = 2
 
-        # Play if we have full information on a valid card. This is always the optimal play
-        if potential_play is not None:
-            decision = 0
 
-        if decision is -1:
-            # if we can't do anything else, do our safest option, which is discarding
-            decision = 2
 
+        decision = 1 if decision is -1 and game_state['hints'] > 0 else 2
         return self.actions[decision]
 
     def ai_decide_action_play_card(self):
@@ -317,7 +315,9 @@ class AIPlayer(Player):
                 for color in game_state['colors']:
 
                     # and if that card has a valid position to play on
-                    if game_state['active'][color][-1].value is card.value + 1 and game_state['active'][color][-1].color is card.color:
+
+                    active_card = game_state['active'][color][-1]
+                    if active_card.value is card.value - 1 and active_card.color is card.color:
 
                         # return it to play on
                         return card
@@ -377,7 +377,7 @@ def create_deck():
 
 
 # Game Loop
-_deck = create_deck()  # already shuffled
+game_state['deck'] = create_deck()  # already shuffled
 h = Game([AIPlayer(0), AIPlayer(1)])
 
 while not game_state['game_over']:
