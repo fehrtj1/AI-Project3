@@ -1,5 +1,7 @@
 import random
 
+colors = ["red", "yellow", "green", "blue", "white"]
+
 
 class Game:
     def __init__(self, clues, players):
@@ -87,9 +89,9 @@ class Clue:
 class Player:
     def __init__(self, number):
         self.hand = []
+        self.cards_known = []
         self.number = number
         self.initial_draw(_deck)
-        self.cards_known = [Card(None, None)] * len(self.hand)
 
     def discard(self, card_index):
         if 0 < card_index < len(self.hand):
@@ -108,8 +110,8 @@ class Player:
     def print_hand(self):
         i = 0
         for card in self.cards_known:
-            print("Card at index {0}: ".format(i) + card.color if card.color is not None else "Unknown color - {0}".
-                  format(str(card.value)) if card.value is not None else "Unknown value")
+            print("Card at index " + str(i) + ": " +
+                  card.color if card.color is not None else "Unknown color - " + str(card.value) if card.value is not None else "Unknown value")
             i += 1
 
     def print_full_hand(self):
@@ -128,7 +130,6 @@ class Player:
 def create_deck():
     deck_length = 50
     deck = []
-    colors = ['green', 'blue', 'yellow', 'red', 'white']
     for color in colors:
         for i in range(10):
 
@@ -155,39 +156,43 @@ _deck = create_deck()  # already shuffled
 h = Game([], [Player(0), Player(1)])
 
 while not h.game_lost:
-    initial_input = input("Player " + str(h.current_player) + "choose an action: (p)lay, (d)iscard, give (h)int")
     h.players[h.current_player].draw(_deck)
-    if initial_input == "P" or initial_input == "p":
+    initial_input = input("Player " + str(h.current_player) + " choose an action: (p)lay, (d)iscard, give (h)int\n")
+    if initial_input.lower() == "p":
+        print("Playing a card")
         h.players[h.current_player].print_hand()
         card_num = int(input("Pick a card index to play\n"))
         while len(h.players[h.current_player].hand) < card_num or card_num < 0:
             print("bad input")
             card_num = input("Pick a card index to play\n")
         h.play(h.players[h.current_player], card_num)
-    elif initial_input == "D" or initial_input == "d":
+    elif initial_input.lower() == "d":
+        print("Discarding a card")
         h.players[h.current_player].print_hand()
         card_num = int(input("Pick a card index to discard\n"))
         while len(h.players[h.current_player].hand) < card_num or card_num < 0:
             print("bad input")
             card_num = input("Pick a card index to discard\n")
         h.discard(h.players[h.current_player], card_num)
-    elif initial_input == "H" or initial_input == "h":
+    elif initial_input.lower() == "h":
+        print("Giving a hint")
         h.players[h.other_player_number()].print_full_hand()
-        type_input = input("Give a hint on (V)alue or (C)olor")
-        while type_input != "C" or type_input != "c" or type_input != "V" or type_input != "v":
-            print("invalid hint")
-            type_input = input("Give a hint on (V)alue or (C)olor")
-        if type_input == "C" or type_input == "c":
-            color_input = input("green, yellow, red, blue, or white").lower()
-            while color_input != "green" or color_input != "yellow" or color_input != "red" or color_input != "blue" or color_input != "white":
+        type_input = input("Give a hint on (V)alue or (C)olor\n")
+        hint_types = ['c', 'v']
+        while type_input.lower() not in hint_types:
+            print("\ninvalid hint\n")
+            type_input = input("Give a hint on (V)alue or (C)olor\n")
+        if type_input.lower() == "c":
+            color_input = input("green, yellow, red, blue, or white\n").lower()
+            while color_input not in colors:
                 print("invalid color")
-                color_input = input("green, yellow, red, blue, or white").lower()
+                color_input = input("green, yellow, red, blue, or white\n").lower()
             h.give_hint(None, color_input)
-        elif type_input == "V" or type_input == "v":
-            value_input = int(input("A number 1 - 5"))
+        elif type_input.lower() == "v":
+            value_input = int(input("A number 1 - 5\n"))
             while value_input > 5 or value_input < 0:
                 print("invalid number")
-                value_input = int(input("A number 1 - 5"))
+                value_input = int(input("A number 1 - 5\n"))
             h.give_hint(value_input, None)
     else:
         print("Invalid action\n")
