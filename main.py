@@ -8,6 +8,10 @@ game_state = {
 }
 
 
+def flatten(l):
+    return [item for sublist in l for item in sublist]
+
+
 class Game:
     def __init__(self, players):
         self.discarded_cards = []
@@ -19,7 +23,7 @@ class Game:
         self.fuse_tokens = 3
         self.game_over = False
         self.players = players
-        self.current_player = players[0].number # always start with player 0
+        self.current_player = players[0].number  # always start with player 0
         self.last_turn = False
 
     # Possible moves during a turn
@@ -70,7 +74,8 @@ class Game:
 
             # if the card being played is one greater than the last card on that pile,
             # AND they're the same color, we play it
-            if self.active_cards[pile][-1].value is (player.hand[card_index].value - 1) and pile is player.hand[card_index].color:
+            if self.active_cards[pile][-1].value is (player.hand[card_index].value - 1)\
+                    and pile is player.hand[card_index].color:
                 self.active_cards[pile].append(player.hand.pop(card_index))
                 player.cards_known.pop(card_index)
                 self.active_cards[pile].append(player.hand[card_index])
@@ -81,7 +86,8 @@ class Game:
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
-                print("Play invalid: either value or color does not follow\nIgniting fuse number " + str(cur_fuses) + "...")
+                print(R"Play invalid: either value or color does not follow"
+                      R"Igniting fuse number " + str(cur_fuses) + "...")
                 if cur_fuses is 0:
                     self.game_over = True
                     print("All fuses have been lit, game is over")
@@ -121,6 +127,9 @@ class Card:
     def __str__(self):
         return self.color + " - " + str(self.value)
 
+    def __eq__(self, other):
+        return self.color is other.color and self.value is other.value
+
 
 class Player:
     def __init__(self, number):
@@ -151,14 +160,13 @@ class AIPlayer(Player):
     # NEVER LET THE AI SEE THEIR OWN HAND
 
     def ai_decide_initial_action(self, game):
-        #if game.discarded_cards.is_empty() and game.active_cards.values()
         return None
 
     def ai_decide_action_play_card(self, game):
-        return 0,
+        return None, None
 
     def ai_decide_action_give_hint(self, game):
-        return None
+        return None, None
 
     def ai_decide_action_discard_card(self, game):
         return None
