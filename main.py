@@ -1,4 +1,5 @@
 import random
+import itertools
 
 colors = ['green', 'blue', 'yellow', 'red', 'white']
 
@@ -21,7 +22,7 @@ class Game:
 
     # Possible moves during a turn
 
-    def give_hint(self, player, value, color):  # Pass None for one since only one piece may be given
+    def give_hint(self, value, color):  # Pass None for one since only one piece may be given
         if self.time_tokens > 0:
             self.time_tokens -= 1
 
@@ -63,6 +64,12 @@ class Game:
             # AND they're the same color, we play it
             if self.active_cards[pile][-1].value is player.hand[card_index].valure - 1 and pile is player.hand[card_index].color:
                 self.active_cards[pile].append(player.hand[card_index])
+                if len(sum(self.active_cards.values(), [])) == 25:
+                    self.game_lost = True
+                    print("Game win")
+                    return True
+
+
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
@@ -86,8 +93,10 @@ class Game:
             if len(_deck) is 0:
                 print("One turn remaining, draw pile empty")
                 self.last_turn = True
+            return True
         else:
             print("Game should have already ended")
+            return False
 
     def change_player(self):
         self.current_player = ((self.current_player + 1) % len(self.players))
@@ -139,8 +148,7 @@ class Player:
     # Draw 5 at the start of the game
     def initial_draw(self):
         for _ in range(self.hand_size):
-            _deck.pop()
-
+            self.hand.append(_deck.pop())
 
 
 def create_deck():
