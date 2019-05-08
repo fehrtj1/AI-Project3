@@ -249,7 +249,7 @@ class AIPlayer(Player):
 
     def ai_decide_initial_action(self, game):
 
-        potential_play = self.get_playable_card()
+        potential_play = self.have_playable_card()
         decision = -1
 
         if game_state['hints'] >= 1 and not self.is_cards_known_complete():
@@ -273,7 +273,7 @@ class AIPlayer(Player):
         return self.actions[decision]
 
     def ai_decide_action_play_card(self, game):
-        play = self.get_playable_card()
+        play = self.have_playable_card()
         index_of_play = self.hand.index(play)
         return index_of_play, play.color
 
@@ -282,9 +282,9 @@ class AIPlayer(Player):
         # Randomly pick if we should give a color hint or a value hint
         if random.random() > 0.6:
             # Give color hint
-            rand_color = game_state['colors'][random.randint(0, len(game_state['colors']))]
+            rand_color = game_state['colors'][random.randint(0, len(game_state['colors']) - 1)]
             while game.players[game.other_player_number()].num_cards(rand_color, None) <= 0 < game.players[game.other_player_number()].num_known_cards(rand_color, None):
-                rand_color = game_state['colors'][random.randint(0, len(game_state['colors']))]
+                rand_color = game_state['colors'][random.randint(0, len(game_state['colors']) - 1)]
             return None, rand_color
         else:
             weighted_list = [1, 1, 1, 2, 2, 3, 3, 4, 4, 5]
