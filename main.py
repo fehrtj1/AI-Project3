@@ -42,7 +42,8 @@ class Game:
         if self.time_tokens < 8:
             print("Discarding...")
             self.time_tokens += 1
-            player.hand[card_index] = None
+            self.discarded_cards.append(player.hand.pop(card_index))
+            player.cards_known.pop(card_index)
             player.draw(player, _deck)
             self.change_player()
         else:
@@ -69,13 +70,6 @@ class Game:
         else:
             print("card not in player's hand")
         self.change_player()
-
-    def discard(self, player, card_index):
-        if 0 < card_index < len(player.hand):
-            player.hand[card_index] = None
-            player.cards_known[card_index] = None
-            return
-        print("Card not in hand")
 
     def draw(self, player):
         new_card = _deck.pop()
