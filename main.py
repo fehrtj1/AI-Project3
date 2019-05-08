@@ -3,15 +3,15 @@ import functools
 from sys import exit
 
 game_state = {
-    'discarded' : [],
-    'active' : {},
-    'colors' : ['blue', 'green', 'red', 'white', 'yellow'],
-    'hints' : 8,
-    'fuses' : 3,
-    'game_over' : False,
-    'current_player' : 0,
-    'deck' : [],
-    'hand_size' : 5
+    'discarded': [],
+    'active': {},
+    'colors': ['blue', 'green', 'red', 'white', 'yellow'],
+    'hints': 8,
+    'fuses': 3,
+    'game_over': False,
+    'current_player': 0,
+    'deck': [],
+    'hand_size': 5
 }
 
 for c in game_state['colors']:
@@ -186,6 +186,48 @@ class Player:
         game_state['hand_size'] = 5
         self.initial_draw()
 
+    def num_cards(self, color, value):
+        if color is not None and value is not None:
+            count = 0
+            for card in self.hand:
+                if card == Card(color, value):
+                    count += 1
+            return count
+        if color is None and value is not None:
+            count = 0
+            for card in self.hand:
+                if card.value == value:
+                    count += 1
+            return count
+        if color is not None and value is None:
+            count = 0
+            for card in self.hand:
+                if card.color is color:
+                    count += 1
+            return count
+        return -1
+
+    def num_known_cards(self, color, value):
+        if color is not None and value is not None:
+            count = 0
+            for card in self.cards_known:
+                if card == Card(color, value):
+                    count += 1
+            return count
+        if color is None and value is not None:
+            count = 0
+            for card in self.cards_known:
+                if card.value == value:
+                    count += 1
+            return count
+        if color is not None and value is None:
+            count = 0
+            for card in self.cards_known:
+                if card.color is color:
+                    count += 1
+            return count
+        return -1
+
     def print_hand(self):
         i = 0
         for card in self.cards_known:
@@ -195,7 +237,7 @@ class Player:
 
     def print_full_hand(self):
         for card in self.hand:
-            print(card.color + " - " + str(card.value) + "\n")
+            print(card + "\n")
 
     # Draw 5 at the start of the game
     def initial_draw(self):
@@ -223,6 +265,43 @@ class AIPlayer(Player):
         return None, None
 
     def ai_decide_action_give_hint(self, game):
+        counts = []
+        # Count how many times each card shows up on the field
+        for i in range(1, len(game_state['colors']) + 1):
+            counts.append(flatten(game_state['active'].values()).count(i))
+        # no ones on the table
+        if (0 < game.players[game.other_player_number()].num_cards(None, 1) !=
+            game.players[game.other_player_number()].num_known_cards(None, 1)) and \
+                (counts[0] < 3 or (counts[0] >= 3 and game.players[game.other_player_number()].num_cards(None, 1) > 1)):
+            return 1, None
+        if (0 < game.players[game.other_player_number()].num_cards(None, 2) !=
+            game.players[game.other_player_number()].num_known_cards(None, 2)):
+            return 2, None
+        if (0 < game.players[game.other_player_number()].num_cards(None, 3) !=
+            game.players[game.other_player_number()].num_known_cards(None, 3)):
+            return 3, None
+        if (0 < game.players[game.other_player_number()].num_cards(None, 4) !=
+            game.players[game.other_player_number()].num_known_cards(None, 4)):
+            return 4, None
+        if (0 < game.players[game.other_player_number()].num_cards(None, 5) !=
+            game.players[game.other_player_number()].num_known_cards(None, 5)):
+            return 5, None
+        if (0 < game.players[game.other_player_number()].num_cards('blue', None) !=
+            game.players[game.other_player_number()].num_known_cards('blue', None)):
+            return None, 'blue'
+        if (0 < game.players[game.other_player_number()].num_cards('green', None) !=
+            game.players[game.other_player_number()].num_known_cards('green', None)):
+            return None, 'green'
+        if (0 < game.players[game.other_player_number()].num_cards('red', None) !=
+            game.players[game.other_player_number()].num_known_cards('red', None)):
+            return None, 'red'
+        if (0 < game.players[game.other_player_number()].num_cards('white', None) !=
+            game.players[game.other_player_number()].num_known_cards('white', None)):
+            return None, 'white'
+        if (0 < game.players[game.other_player_number()].num_cards('yellow', None) !=
+            game.players[game.other_player_number()].num_known_cards('yellow', None)):
+            return None, 'yellow'
+
         return None, None
 
     def ai_decide_action_discard_card(self, game):
