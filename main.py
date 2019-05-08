@@ -42,10 +42,8 @@ class Game:
     def discard(self, player, card_index):
         if self.time_tokens < 8 and card_index in range(5):
             self.time_tokens += 1
-
-            player.hand[card_index] = None
-            player.cards_known[card_index] = None
-
+            self.discarded_cards.append(player.hand.pop(card_index))
+            player.cards_known.pop(card_index)
             player.draw(player, _deck)
             self.change_player()
             return True
