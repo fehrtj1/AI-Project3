@@ -173,7 +173,9 @@ class Card:
         return self.color + " - " + str(self.value)
 
     def __eq__(self, other):
-        return self.color is other.color and self.value is other.value and self.value is not None and self.color is not None
+        if self is None or other is None:
+            return False
+        return self.color is other.color and self.value is other.value
 
 
 class Player:
@@ -320,7 +322,7 @@ class AIPlayer(Player):
                         # return it to play on
                         return card
 
-        # Also need to perform process of elimination to see if a card appears that way as well, but this project scope creeped us so hard
+        # Also need to perform process of elimination to see if a card appears that way as well, but this project scope crept us so hard
         return None
 
     def is_cards_known_complete(self):
