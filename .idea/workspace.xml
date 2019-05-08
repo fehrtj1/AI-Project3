@@ -16,10 +16,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="529">
-              <caret line="268" column="83" selection-start-line="268" selection-start-column="83" selection-end-line="268" selection-end-column="83" />
+            <state relative-caret-position="274">
+              <caret line="324" column="65" lean-forward="true" selection-start-line="324" selection-start-column="65" selection-end-line="324" selection-end-column="65" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
+                <element signature="e#8242#10717#2" />
               </folding>
             </state>
           </provider>
@@ -148,7 +149,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37550000" />
+    <option name="totallyTimeSpent" value="41480000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -191,10 +192,11 @@
     <entry file="file://$PROJECT_DIR$/ai.py" />
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="529">
-          <caret line="268" column="83" selection-start-line="268" selection-start-column="83" selection-end-line="268" selection-end-column="83" />
+        <state relative-caret-position="274">
+          <caret line="324" column="65" lean-forward="true" selection-start-line="324" selection-start-column="65" selection-end-line="324" selection-end-column="65" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#8242#10717#2" />
           </folding>
         </state>
       </provider>
