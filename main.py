@@ -1,20 +1,20 @@
 import random
+from sys import exit
+from ai import *
 
 colors = ['green', 'blue', 'yellow', 'red', 'white']
 
-class Game:
-    def __init__(self, clues, players):
 
+class Game:
+    def __init__(self, players):
         self.discarded_cards = []
         self.active_cards = {}
-
         for color in colors:
             self.active_cards[color] = []  # List of cards at that index
 
         self.time_tokens = 8
         self.fuse_tokens = 3
-        self.game_lost = False
-        self.clues = clues
+        self.game_over = False
         self.players = players
         self.current_player = players[0].number
         self.last_turn = False
@@ -27,9 +27,9 @@ class Game:
 
             if value is None and color is not None or value is not None and color is None:
                 if value is None:
-                    self.clues.append(Clue(color, None, self.players[self.other_player_number()]))
+                    self.add_information(color, None, self.players[self.other_player_number()])
                 if color is None:
-                    self.clues.append(Clue(None, value, self.players[self.other_player_number()]))
+                    self.add_information(None, value, self.players[self.other_player_number()])
             else:
                 print("Too much or not enough hint information")
             self.change_player()
@@ -37,6 +37,14 @@ class Game:
         else:
             print("No tokens available to give hint")
             return False
+
+    @staticmethod
+    def add_information(color, value, player):
+        for i in range(len(player.cards_known)):
+            if color is not None and player.hand[i].color == color:
+                player.cards_known[i].color = color
+            if value is not None and player.hand[i].value == value:
+                player.cards_known[i].value = value
 
     def discard(self, player, card_index):
         if self.time_tokens < 8 and card_index in range(5):
@@ -59,14 +67,21 @@ class Game:
 
             # if the card being played is one greater than the last card on that pile,
             # AND they're the same color, we play it
-            if self.active_cards[pile][-1].value is player.hand[card_index].valure - 1 and pile is player.hand[card_index].color:
-                self.active_cards[pile].append(player.hand[card_index])
+            if self.active_cards[pile][-1].value is player.hand[card_index].value - 1 and pile is player.hand[card_index].color:
+                self.active_cards[pile].append(player.hand.pop(card_index))
+                player.cards_known.pop(card_index)
+                # Check to see if that was the last card
+                should_game_over = True
+                for pile in self.active_cards:
+                    if len(pile) != 5:
+                        should_game_over = False
+                self.game_over = should_game_over
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
                 print("Play invalid: either value or color does not follow\nIgniting fuse number " + str(cur_fuses) + "...")
                 if cur_fuses is 0:
-                    self.game_lost = True
+                    self.game_over = True
                     print("All fuses have been lit, game is over")
 
             self.change_player()
@@ -80,7 +95,7 @@ class Game:
         if len(_deck) >= 1:
             new_card = _deck.pop()
             player.hand[player.hand.index(None)] = new_card
-            self.cards_known.append(Card(None, None))
+            player.cards_known.append(Card(None, None))
             if len(_deck) is 0:
                 print("One turn remaining, draw pile empty")
                 self.last_turn = True
@@ -103,25 +118,13 @@ class Card:
         return self.color + " - " + str(self.value)
 
 
-class Clue:
-    def __init__(self, color, value, affected_player):
-        self.value = value
-        self.color = color
-        self.affected_player = affected_player
-        for i in range(len(affected_player.cards_known)):
-            if affected_player.hand[i].color == self.color:
-                affected_player.cards_known[i].color = self.color
-            if affected_player.hand[i].value == self.value:
-                affected_player.cards_known[i].value = self.value
-
-
 class Player:
     def __init__(self, number):
         self.hand = []
         self.cards_known = []
         self.number = number
         self.hand_size = 5
-        self.initial_draw(_deck)
+        self.initial_draw()
 
     def print_hand(self):
         i = 0
@@ -137,8 +140,7 @@ class Player:
     # Draw 5 at the start of the game
     def initial_draw(self):
         for _ in range(self.hand_size):
-            _deck.pop()
-
+            self.hand.append(_deck.pop())
 
 
 def create_deck():
@@ -173,49 +175,26 @@ def calculate_final_score(game):
 
 # Game Loop
 _deck = create_deck()  # already shuffled
-h = Game([], [Player(0), Player(1)])
+h = Game([AIPlayer(0), AIPlayer(1)])
 
 
-while not h.game_lost:
-    h.players[h.current_player].draw(_deck)
-    initial_input = input("Player " + str(h.current_player) + " choose an action: (p)lay, (d)iscard, give (h)int\n")
-    if initial_input.lower() == "p":
-        print("Playing a card")
-        h.players[h.current_player].print_hand()
-        card_num = int(input("Pick a card index to play\n"))
-        while len(h.players[h.current_player].hand) < card_num or card_num < 0:
-            print("bad input")
-            card_num = input("Pick a card index to play\n")
-        h.play(h.players[h.current_player], card_num)
-    elif initial_input.lower() == "d":
-        print("Discarding a card")
-        h.players[h.current_player].print_hand()
-        card_num = int(input("Pick a card index to discard\n"))
-        while len(h.players[h.current_player].hand) < card_num or card_num < 0:
-            print("bad input")
-            card_num = input("Pick a card index to discard\n")
-        h.discard(h.players[h.current_player], card_num)
-    elif initial_input.lower() == "h":
-        print("Giving a hint")
-        h.players[h.other_player_number()].print_full_hand()
-        type_input = input("Give a hint on (V)alue or (C)olor\n")
-        hint_types = ['c', 'v']
-        while type_input.lower() not in hint_types:
-            print("\ninvalid hint\n")
-            type_input = input("Give a hint on (V)alue or (C)olor\n")
-        if type_input.lower() == "c":
-            color_input = input("green, yellow, red, blue, or white\n").lower()
-            while color_input not in colors:
-                print("invalid color")
-                color_input = input("green, yellow, red, blue, or white\n").lower()
-            h.give_hint(None, color_input)
-        elif type_input.lower() == "v":
-            value_input = int(input("A number 1 - 5\n"))
-            while value_input > 5 or value_input < 0:
-                print("invalid number")
-                value_input = int(input("A number 1 - 5\n"))
-            h.give_hint(value_input, None)
-    else:
-        print("Invalid action\n")
-        continue
-    h.change_player()
+while not h.game_over:
+    initial_action = h.players[h.current_player].ai_decide_initial_action(h)
+    if initial_action == "p":
+        print("AI Player " + h.current_player + " playing a card")
+        card_num, pile = h.players[h.current_player].ai_decide_action_play_card(h)
+        if not h.play(h.players[h.current_player], card_num, pile):
+            print("Player failed to play card!")
+            exit()
+    elif initial_action == "d":
+        print("AI Player " + h.current_player + " playing a card")
+        card_num = h.players[h.current_player].ai_decide_action_discard_card(h)
+        if not h.discard(h.players[h.current_player], card_num):
+            print("Player failed to discard card!")
+            exit()
+    elif initial_action == "h":
+        print("AI Player " + h.current_player + " giving a hint")
+        value, color = h.players[h.current_player].ai_decide_action_give_hint(h)
+        if not h.give_hint(h.players[h.current_player], value, color):
+            print("Player failed to give hint!")
+            exit()
