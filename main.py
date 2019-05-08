@@ -249,7 +249,7 @@ class AIPlayer(Player):
 
     def ai_decide_initial_action(self, game):
 
-        potential_play = self.get_playable_card()
+        potential_play = self.have_playable_card()
         decision = -1
 
         if game_state['hints'] >= 1 and not self.is_cards_known_complete():
@@ -313,7 +313,7 @@ class AIPlayer(Player):
                 for color in game_state['colors']:
 
                     # and if that card has a valid position to play on
-                    if game_state['active'][color][-1].value + 1 is card.value and game_state['active'][color][-1].color is card.color:
+                    if game_state['active'][color][-1].value is card.value + 1 and game_state['active'][color][-1].color is card.color:
 
                         # return it to play on
                         return card
