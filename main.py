@@ -78,10 +78,6 @@ class Game:
             if game_state['active'][pile][-1].value is (player.hand[card_index].value - 1) and pile is player.hand[card_index].color:
                 game_state['active'][pile].append(player.hand.pop(card_index))
                 player.cards_known.pop(card_index)
-                game_state['active'][pile].append(player.hand[card_index])
-
-
-
             else:
                 game_state['fuses'] -= 1
                 cur_fuses = 3 - game_state['fuses']
@@ -94,7 +90,6 @@ class Game:
             return False
 
     def draw(self, player):
-
         if len(_deck) >= 1:
             new_card = _deck.pop()
             player.hand[player.hand.index(None)] = new_card
@@ -126,7 +121,6 @@ class Game:
             for color in game_state['colors']:
                 score_sum += max(game_state['active'][color])
             print("GAME OVER\nFinal score is " + str(score_sum))
-
         return answer
 
     def change_player(self):
@@ -135,35 +129,36 @@ class Game:
     def other_player_number(self):
         return (game_state['current_player'] + 1) % len(self.players)
 
+    # We can specialize our decisions based on how far along we are in the game
     def is_early(self):
-        cards_left = 25 - len(flatten(game_state['active'].values()))
-        return 25 >= cards_left >= 17
+        return 25 >= 25 - self.get_active_card_count() >= 17
 
     def is_mid(self):
-        cards_left = 25 - len(flatten(game_state['active'].values()))
-        return 16 >= cards_left >= 10
+        return 16 >= 25 - self.get_active_card_count() >= 10
 
     def is_late(self):
-        cards_left = 25 - len(flatten(game_state['active'].values()))
-        return 9 >= cards_left >= 0
+        return 9 >= 25 - self.get_active_card_count() >= 0
 
+    # Returns how many cards are in the piles
+    def get_active_card_count(self):
+        return len(flatten(game_state['active'].values()))
 
-    # returns the number of cards needed of a given value in the current active cards
+    # Returns the number of cards needed of a given value in the current active cards across all piles
     def n_value_needed(self, v):
-        n = 0
 
         if v < 1 or v > 5:
-            print("value error")
-            return 0
+            print("Value Error: Card value does not exist.")
+            return None
 
+        # For example, if we need a 4, that means there are 3's on top of a pile, so we subtract 1
+        # None signifies we need a 1 in that spot. i.e. No cards have been played yet there
         v = None if v is 1 else (v - 1)
+
+        n = 0
 
         for color in game_state['colors']:
             n = n + (1 if game_state['active'][color][-1].value is v else 0)
         return n
-
-
-
 
 
 class Card:
@@ -183,7 +178,6 @@ class Player:
         self.hand = []
         self.cards_known = []
         self.number = number
-        game_state['hand_size'] = 5
         self.initial_draw()
 
     def num_cards(self, color, value):
@@ -255,15 +249,33 @@ class AIPlayer(Player):
 
     def ai_decide_initial_action(self, game):
 
+        potential_play = self.get_playable_card()
         decision = -1
 
-        if game_state['hints'] is 0 and :
-            self.ai_decide_action_discard_card(game)
+        if game_state['hints'] >= 1 and not self.is_cards_known_complete():
+            decision = 1
 
-        return None
+        # If we have no hint tokens and we have no plays, we are practically forced to discard
+        # Improvements would take into account late game and fuse count to guess a likely (say, 50% + 15%*fuse count)
+        # This makes it more careful the closer we are to losing by igniting all the fuses. For example, It will not
+        # Guess here if there is only one fuse remaining unless it is 90% certain that it would be a successful play
+        if game_state['hints'] is 0 and potential_play is None:
+            decision = 2
+
+        # Play if we have full information on a valid card. This is always the optimal play
+        if potential_play is not None:
+            decision = 0
+
+        if decision is -1:
+            # if we can't do anything else, do our safest option, which is discarding
+            decision = 2
+
+        return self.actions[decision]
 
     def ai_decide_action_play_card(self, game):
-        return None, None
+        play = self.get_playable_card()
+        index_of_play = self.hand.index(play)
+        return index_of_play, play.color
 
     def ai_decide_action_give_hint(self, game):
         random.seed()
@@ -285,16 +297,56 @@ class AIPlayer(Player):
 
     def ai_decide_action_discard_card(self, game):
 
-        return None
+        index_to_discard = self.hand.index(self.get_first_useless())
+
+        if index_to_discard is not None:
+            return index_to_discard
+
+        else:
+            return random.randint(0, 4)
 
     def have_playable_card(self):
-
         for card in self.cards_known:
+
+            # If we have full info on a card
             if card.color is not None and card.value is not None:
                 for color in game_state['colors']:
 
+                    # and if that card has a valid position to play on
+                    if game_state['active'][color][-1].value + 1 is card.value and game_state['active'][color][-1].color is card.color:
+
+                        # return it to play on
+                        return card
+
+        # Also need to perform process of elimination to see if a card appears that way as well, but this project scope creeped us so hard
+        return None
+
+    def is_cards_known_complete(self):
+        sum = 0
+        for card in self.cards_known:
+            if card.color is not None and card.value is not None:
+                sum += 1
+
+        return True if sum is game_state['hand_size'] else False
+
+    def get_first_useless(self):
+        for card in self.cards_known:
+            if card.color is not None and card.value is not None and card in self.get_used_list():
+                # Just get the first one since that's all we can operate on,
+                # and because we will run this check again next turn
+                return card
+        return None
 
 
+    def get_used_list(self):
+        used = []
+        for card in game_state['discarded']:
+            used.append(card)
+
+        for color in game_state['colors']:
+            for card in game_state['active'][color]:
+                used.append(card)
+        return used
 
 def create_deck():
     deck_length = 50
@@ -345,6 +397,6 @@ while not game_state['game_over']:
             print("Player failed to give hint!")
             exit()
 
-    # Handles print statements
+    # Handles print statements for which loss event occurred
     if h.is_over():
         break
