@@ -79,18 +79,12 @@ class Game:
                 self.active_cards[pile].append(player.hand.pop(card_index))
                 player.cards_known.pop(card_index)
                 self.active_cards[pile].append(player.hand[card_index])
-                if len(sum(self.active_cards.values(), [])) == len(colors) * 5:
-                    self.game_over = True
-                    print("Game win")
-                    return True
+
             else:
                 self.fuse_tokens -= 1
                 cur_fuses = 3 - self.fuse_tokens
-                print(R"Play invalid: either value or color does not follow"
-                      R"Igniting fuse number " + str(cur_fuses) + "...")
-                if cur_fuses is 0:
-                    self.game_over = True
-                    print("All fuses have been lit, game is over")
+                print("Play invalid: either value or color does not follow"
+                      "Igniting fuse number " + str(cur_fuses) + "...")
 
             self.change_player()
             return True
@@ -104,13 +98,40 @@ class Game:
             new_card = _deck.pop()
             player.hand[player.hand.index(None)] = new_card
             player.cards_known.append(Card(None, None))
-            if len(_deck) is 0:
-                print("One turn remaining, draw pile empty")
-                self.last_turn = True
-            return True
+
         else:
             print("Game should have already ended")
             return False
+
+    def is_over(self):
+
+        answer = False
+
+        if self.fuse_tokens is 0:
+            self.game_over = True
+            print("GAME OVER")
+            answer = True
+
+        if len(_deck) is 0:
+            print("GAME OVER")
+            answer = True
+
+        if len(sum(self.active_cards.values(), [])) == len(colors) * 5:
+            self.game_over = True
+            print("GAME WIN")
+            answer = True
+
+        # Calculate final score if the game is over
+        if answer:
+            score_sum = 0
+            for color in colors:
+                score_sum += max(self.active_cards[color])
+            print("Final score is " + str(score_sum))
+
+        return answer
+
+
+
 
     def change_player(self):
         self.current_player = ((self.current_player + 1) % len(self.players))
@@ -195,17 +216,9 @@ def create_deck():
     return deck
 
 
-def calculate_final_score(game):
-    score_sum = 0
-    for color in colors:
-        score_sum += max(game.active_cards[color])
-    return score_sum
-
-
 # Game Loop
 _deck = create_deck()  # already shuffled
 h = Game([AIPlayer(0), AIPlayer(1)])
-
 
 while not h.game_over:
     initial_action = h.players[h.current_player].ai_decide_initial_action(h)
@@ -227,3 +240,6 @@ while not h.game_over:
         if not h.give_hint(_value, _color):
             print("Player failed to give hint!")
             exit()
+
+    if h.game_over():
+        break
