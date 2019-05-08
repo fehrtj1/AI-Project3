@@ -298,10 +298,8 @@ class AIPlayer(Player):
             # Give value hint
 
     def ai_decide_action_discard_card(self):
-
-        index_to_discard = self.hand.index(self.get_first_useless())
-
-        if index_to_discard is not None:
+        if self.get_first_useless() is not None:
+            index_to_discard = self.hand.index(self.get_first_useless())
             return index_to_discard
 
         else:
