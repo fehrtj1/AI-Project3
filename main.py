@@ -173,7 +173,9 @@ class Card:
         return self.color + " - " + str(self.value)
 
     def __eq__(self, other):
-        return self.color is other.color and self.value is other.value and self.value is not None and self.color is not None
+        if self is None or other is None:
+            return False
+        return self.color is other.color and self.value is other.value
 
 
 class Player:
